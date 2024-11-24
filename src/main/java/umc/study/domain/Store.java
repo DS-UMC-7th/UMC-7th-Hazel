@@ -1,5 +1,6 @@
 package umc.study.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
 import umc.study.domain.common.BaseEntity;
 
@@ -26,6 +27,7 @@ public class Store extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "region_id")
+    @JsonBackReference
     private Region region;
 
     @OneToMany(mappedBy = "store", cascade = CascadeType.ALL)

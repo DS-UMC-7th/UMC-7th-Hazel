@@ -1,5 +1,6 @@
 package umc.study.domain;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import umc.study.domain.common.BaseEntity;
@@ -22,6 +23,7 @@ public class Region extends BaseEntity {
     private String name;
 
     @OneToMany(mappedBy = "region", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<Store> stores = new ArrayList<>();
 
 }
