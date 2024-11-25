@@ -21,6 +21,7 @@ public class MissionRestController {
         return ApiResponse.onSuccess(response);
     }
 
+    // 미션 성공
     @PostMapping("/challenge")
     public ApiResponse<String> challengeMission(@RequestBody @Valid MissionRequestDTO.ChallengeMissionDto request) {
         missionCommandService.challengeMission(request);
