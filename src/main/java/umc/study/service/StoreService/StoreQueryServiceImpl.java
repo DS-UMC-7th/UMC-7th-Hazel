@@ -1,0 +1,65 @@
+package umc.study.service.StoreService;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import umc.study.domain.Member;
+import umc.study.domain.Mission;
+import umc.study.domain.Review;
+import umc.study.domain.Store;
+import umc.study.repository.MemberRepository;
+import umc.study.repository.MissionRepository;
+import umc.study.repository.ReviewRepository;
+import umc.study.repository.StoreRepository.StoreRepository;
+
+import java.util.List;
+import java.util.Optional;
+
+@Service
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
+public class StoreQueryServiceImpl implements StoreQueryService{
+
+    private final StoreRepository storeRepository;
+    private final ReviewRepository reviewRepository;
+//    private final MemberRepository memberRepository;
+    private final MissionRepository missionRepository;
+
+    @Override
+    public Optional<Store> findStore(Long id) {
+        return storeRepository.findById(id);
+    }
+
+    @Override
+    public List<Store> findStoresByNameAndScore(String name, Float score) {
+        List<Store> filteredStores = storeRepository.dynamicQueryWithBooleanBuilder(name, score);
+
+        filteredStores.forEach(store -> System.out.println("Store: " + store));
+
+        return filteredStores;
+    }
+
+    @Override
+    public Page<Review> getReviewList(Long StoreId, Integer page) {
+
+        Store store = storeRepository.findById(StoreId).get();
+
+        Page<Review> StorePage = reviewRepository.findAllByStore(store, PageRequest.of(page, 10));
+        return StorePage;
+    }
+
+    @Override
+    public Page<Review> getReviewByMember(Long memberId, Integer page){
+        Page<Review> MemberReviewPage = reviewRepository.findAllByMemberId(memberId, PageRequest.of(page, 10));
+
+        return MemberReviewPage;
+    }
+
+    @Override
+    public Page<Mission> getMissionsByStore(Long storeId, Integer page){
+        Page<Mission> missionPage = missionRepository.findAllByStoreId(storeId, PageRequest.of(page, 10));
+        return missionPage;
+    }
+}
