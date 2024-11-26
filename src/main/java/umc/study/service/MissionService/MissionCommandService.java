@@ -7,6 +7,7 @@ import umc.study.converter.MissionConverter;
 import umc.study.domain.Member;
 import umc.study.domain.Mission;
 import umc.study.domain.Store;
+import umc.study.domain.enums.MissionStatus;
 import umc.study.domain.mapping.MemberMission;
 import umc.study.repository.MemberMissionRepository;
 import umc.study.repository.MemberRepository;
@@ -30,6 +31,12 @@ public class MissionCommandService {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 가게입니다."));
 
         Mission mission = MissionConverter.toMission(request, store);
+
+        // 기본값 설정
+        if (mission.getStatus() == null) {
+            mission.setStatus(MissionStatus.NOT_STARTED);
+        }
+
         Mission savedMission = missionRepository.save(mission);
 
         return MissionConverter.toMissionResponseDTO(savedMission);
@@ -43,9 +50,17 @@ public class MissionCommandService {
         Mission mission = missionRepository.findById(request.getMissionId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 미션입니다."));
 
+        // 미션 상태를 'CHALLENGING'으로 변경
+        mission.setStatus(MissionStatus.CHALLENGING);
+        missionRepository.save(mission);
+
+        // 상태 변경된 Mission 객체 저장
+        missionRepository.save(mission);
+
         MemberMission memberMission = MemberMission.builder()
                 .member(member)
                 .mission(mission)
+                .status(MissionStatus.CHALLENGING) // 상태 설정
                 .build();
 
         memberMissionRepository.save(memberMission);
